@@ -1,0 +1,33 @@
+version: 2.1
+jobs:
+  build-and-push:
+    environment:
+      IMAGE_NAME: std4453/jfdmk
+    docker:
+      - image: circleci/node:16.13.0
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 19.03.13
+      - run:
+          name: Install Dependencies
+          command: yarn --frozen-lockfile
+      - run:
+          name: Build Docker image
+          command: |
+            docker build . \
+              -t $IMAGE_NAME:latest
+      - run:
+          name: Push image to Docker Hub
+          command: |
+            echo "$DOCKERHUB_ACCESS_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+            docker push $IMAGE_NAME:latest
+workflows:
+  commit:
+    jobs:
+      - build-and-push:
+          context:
+            - docker-hub
+          filters:
+            branches:
+              only: master

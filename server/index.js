@@ -42,10 +42,14 @@ app.get("/info", async (req, res) => {
   const item = db.data.items.find(({ id }) => id === req.query.id);
   res.header("access-control-allow-origin", "*");
   if (item) {
-    res.send(item);
+    res.send({
+      code: 200,
+      item,
+    });
   } else {
-    res.status(404);
-    res.send("Not found");
+    res.send({
+      code: 404,
+    });
   }
 });
 

@@ -30,6 +30,7 @@ const sleep = (time) =>
   });
 
 let atVideoPage = false;
+let itemId = '';
 
 const initPlayer = async () => {
   let video = null;
@@ -93,13 +94,19 @@ const initPlayer = async () => {
 
   cm.init();
 
-  const itemId = /\/Items\/([0-9a-fA-F]+)/.exec(video.poster)[1];
-  console.log(`[jfdmk] Video itemId is ${itemId}, fetching danmaku list`);
   (async () => {
+    do {
+      await sleep(250);
+    } while (!itemId);
+    console.log(`[jfdmk] Video itemId is ${itemId}, fetching danmaku list`);
     try {
       const resp = await fetch(`${BASE_PATH}/info?id=${itemId}`);
-      const { query } = await resp.json();
+      const { item: {query} = {}, code } = await resp.json();
       if (!atVideoPage) {
+        return;
+      }
+      if (code !== 200) {
+        console.log(`[jfdmk] ${itemId} has no matching danmaku`);
         return;
       }
       provider.addStaticSource(
@@ -179,6 +186,7 @@ const finiPlayer = () => {
   if (cm) {
     cm = null;
   }
+  itemId = '';
 };
 
 const finiControls = () => {
@@ -220,6 +228,17 @@ history.replaceState = (...args) => {
   onLocationChange();
 };
 onLocationChange();
+
+// intercept fetch to get itemId
+const originalFetch = window.fetch;
+window.fetch = (...args) => {
+  const url = args[0];
+  const result = /\/Items\/([0-9a-fA-F]+)\/PlaybackInfo/.exec(url);
+  if (result) {
+    itemId = result[1];
+  }
+  return originalFetch(...args);
+};
 
 window.addEventListener("resize", () => {
   if (cm) {

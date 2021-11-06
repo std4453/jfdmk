@@ -30,7 +30,56 @@ const sleep = (time) =>
   });
 
 let atVideoPage = false;
-let itemId = '';
+let itemId = "";
+let showId = "";
+let cmInitialized = false;
+
+const loadDanmaku = async (itemId) => {
+  try {
+    if (itemId === '') {
+      return;
+    }
+    console.log(`[jfdmk] Video itemId is ${itemId}, fetching danmaku list`);
+    const resp = await fetch(`${BASE_PATH}/info?id=${itemId}`);
+    const { item: { query } = {}, code } = await resp.json();
+    if (itemId === '') {
+      return;
+    }
+    if (code !== 200) {
+      console.log(`[jfdmk] ${itemId} has no matching danmaku`);
+      return;
+    }
+    const provider = new CommentProvider();
+    provider.addParser(
+      new BilibiliFormat.XMLParser(),
+      CommentProvider.SOURCE_XML
+    );
+    do {
+      if (itemId === '') {
+        return;
+      }
+      await sleep(250);
+    } while (!cmInitialized);
+    provider.addTarget(cm);
+    provider.addStaticSource(
+      CommentProvider.XMLProvider("GET", `${BASE_PATH}/danmaku?${query}`),
+      CommentProvider.SOURCE_XML
+    );
+    await provider.load();
+    const video = document.querySelector("video");
+    if (video) {
+      if (!video.paused) {
+        console.log("[jfdmk] Danmaku loaded, starting CommentManager");
+        cm.start();
+        cm.time(video.currentTime * 1000);
+        cm.clear();
+      }
+    }
+  } catch (e) {
+    console.error("[jfdmk] Failed to fetch danmaku");
+    console.error(e);
+  }
+};
 
 const initPlayer = async () => {
   let video = null;
@@ -66,12 +115,6 @@ const initPlayer = async () => {
   cm = new CommentManager(container);
   cm.options.scroll.scale = 1.75;
   window.cm = cm;
-  const provider = new CommentProvider();
-  provider.addParser(
-    new BilibiliFormat.XMLParser(),
-    CommentProvider.SOURCE_XML
-  );
-  provider.addTarget(cm);
 
   video.addEventListener("timeupdate", () => {
     cm.time(video.currentTime * 1000);
@@ -93,38 +136,7 @@ const initPlayer = async () => {
   });
 
   cm.init();
-
-  (async () => {
-    do {
-      await sleep(250);
-    } while (!itemId);
-    console.log(`[jfdmk] Video itemId is ${itemId}, fetching danmaku list`);
-    try {
-      const resp = await fetch(`${BASE_PATH}/info?id=${itemId}`);
-      const { item: {query} = {}, code } = await resp.json();
-      if (!atVideoPage) {
-        return;
-      }
-      if (code !== 200) {
-        console.log(`[jfdmk] ${itemId} has no matching danmaku`);
-        return;
-      }
-      provider.addStaticSource(
-        CommentProvider.XMLProvider("GET", `${BASE_PATH}/danmaku?${query}`),
-        CommentProvider.SOURCE_XML
-      );
-      await provider.load();
-      if (!video.paused) {
-        console.log("[jfdmk] Danmaku loaded, starting CommentManager");
-        cm.start();
-        cm.time(video.currentTime * 1000);
-        cm.clear();
-      }
-    } catch (e) {
-      console.error("[jfdmk] Failed to fetch danmaku");
-      console.error(e);
-    }
-  })();
+  cmInitialized = true;
 };
 
 let controlsRoot = null;
@@ -186,7 +198,9 @@ const finiPlayer = () => {
   if (cm) {
     cm = null;
   }
-  itemId = '';
+  itemId = "";
+  showId = "";
+  cmInitialized = false;
 };
 
 const finiControls = () => {
@@ -233,9 +247,20 @@ onLocationChange();
 const originalFetch = window.fetch;
 window.fetch = (...args) => {
   const url = args[0];
-  const result = /\/Items\/([0-9a-fA-F]+)\/PlaybackInfo/.exec(url);
-  if (result) {
-    itemId = result[1];
+  {
+    const result = /\/Shows\/([0-9a-fA-F]+)\/Episodes/.exec(url);
+    if (result) {
+      showId = result[1];
+    }
+  }
+  {
+    const result = /\/Items\/([0-9a-fA-F]+)\/PlaybackInfo/.exec(url);
+    if (result) {
+      if (itemId !== result[1]) {
+        itemId = result[1];
+        loadDanmaku(itemId);
+      }
+    }
   }
   return originalFetch(...args);
 };

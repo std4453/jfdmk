@@ -23,7 +23,7 @@
 [jfdmk] Video itemId is 368fb92303b596947aad104dca3186f0, fetching danmaku list
 ```
 
-`query` 是 Bilibili 上对应视频的 `oid` 和 `pid` ，你可以打开对应的视频页面然后在 console 中输入：
+`query` 是 Bilibili 上对应视频的 `oid` 和 `pid` ，你可以打开对应的番剧页面然后在 console 中输入：
 
 ```js
 console.log(`oid=${__INITIAL_STATE__.epInfo.cid}&pid=${__INITIAL_STATE__.epInfo.aid}`)
@@ -31,11 +31,13 @@ console.log(`oid=${__INITIAL_STATE__.epInfo.cid}&pid=${__INITIAL_STATE__.epInfo.
 
 也许这一流程能变得更简单，等我研究研究。
 
-然后你需要启动服务器：
+然后你需要启动服务器：（需要 `node >= 16.0.0` ）
 
 ```bash
 $ yarn start
 ```
+
+或者使用 docker 镜像 `std4453/jfdmk:latest` 运行，默认端口 10086，注意 `data/db.json` 需要从外部挂载。
 
 最后，你需要修改 Jellyfin 的 HTML 文件，在 `index.html` 的 `</body>` 前加入：
 

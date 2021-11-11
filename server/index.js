@@ -3,7 +3,7 @@ import qs from "qs";
 import axios from "axios";
 import zlib from "zlib";
 import { promisify } from "util";
-import { Low, JSONFile } from "lowdb";
+import fs from 'fs';
 
 const app = express();
 
@@ -34,12 +34,23 @@ app.get("/danmaku", async (req, res) => {
 
 app.use("/static", express.static("static"));
 
-const db = new Low(new JSONFile("data/db.json"));
-db.data ||= { items: [] };
-await db.read();
+const readFile = promisify(fs.readFile);
+
+let data = JSON.parse(await readFile("data/db.json", "utf8"));
+
+fs.watchFile("data/db.json", async () => {
+  try {
+    console.log("db changed, loading new data");
+    const newData = JSON.parse(await readFile("data/db.json", "utf8"));
+    data = newData;
+    console.log("db updated");
+  } catch (e) {
+    console.error("db reload failed", e);
+  }
+});
 
 app.get("/info", async (req, res) => {
-  const item = db.data.items.find(({ id }) => id === req.query.id);
+  const item = data.items.find(({ id }) => id === req.query.id);
   res.header("access-control-allow-origin", "*");
   if (item) {
     res.send({

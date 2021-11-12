@@ -3,7 +3,7 @@ import qs from "qs";
 import axios from "axios";
 import zlib from "zlib";
 import { promisify } from "util";
-import fs from 'fs';
+import fs from "fs";
 
 const app = express();
 
@@ -13,7 +13,9 @@ app.get("/danmaku", async (req, res) => {
   try {
     const { data } = await axios({
       // override local dns
-      url: `https://36.156.48.35/x/v1/dm/list.so?${qs.stringify(req.query)}`,
+      url: `https://${
+        process.env.BILIBILI_API_ENDPOINT
+      }/x/v1/dm/list.so?${qs.stringify(req.query)}`,
       responseType: "arraybuffer",
       decompress: false,
       headers: {
@@ -49,21 +51,66 @@ fs.watchFile("data/db.json", async () => {
   }
 });
 
-app.get("/info", async (req, res) => {
-  const item = data.items.find(({ id }) => id === req.query.id);
-  res.header("access-control-allow-origin", "*");
-  if (item) {
+app.get("/query", async (req, res) => {
+  try {
+    const { data: jfEpisodeData } = await axios(
+      `${process.env.JELLYFIN_HOST}/Users/${process.env.JELLYFIN_SERVICE_USER}/Items/${req.query.id}`,
+      {
+        headers: {
+          "X-Emby-Token": process.env.JELLYFIN_API_KEY,
+        },
+      }
+    );
+    if (jfEpisodeData.Type !== "Episode") {
+      res.send({ code: 404 });
+      return;
+    }
+    const {
+      SeriesName: seriesName,
+      ParentIndexNumber: seasonIndex,
+      IndexNumber: episodeIndex,
+    } = jfEpisodeData;
+    const season = data.seasons.find(
+      ({ series, season }) => series === seriesName && season === seasonIndex
+    );
+    if (!season) {
+      res.send({ code: 404 });
+      return;
+    }
+    const { bilibili_ss } = season;
+    const { data: bilibiliSeasonData } = await axios({
+      url: `https://${process.env.BILIBILI_API_ENDPOINT}/pgc/web/season/section?season_id=${bilibili_ss}`,
+      headers: {
+        host: "api.bilibili.com",
+      },
+    });
+    if (bilibiliSeasonData.code !== 0) {
+      res.send({ code: 404 });
+      return;
+    }
+    const {
+      result: {
+        main_section: { episodes },
+      },
+    } = bilibiliSeasonData;
+    const episode = episodes[episodeIndex - 1];
+    if (!episode) {
+      res.send({ code: 404 });
+      return;
+    }
+    const { aid, cid } = episode;
+    res.header("access-control-allow-origin", "*");
     res.send({
       code: 200,
-      item,
+      query: `oid=${cid}&pid=${aid}`,
     });
-  } else {
-    res.send({
-      code: 404,
-    });
+  } catch (e) {
+    res.status(500);
+    res.send("Internal Server Error");
+    console.error(e);
   }
 });
 
-app.listen(parseInt(process.env.PORT), () => {
+app.listen(parseInt(process.env.PORT ?? '10086'), () => {
   console.log("Server started");
 });

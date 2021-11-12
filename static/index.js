@@ -41,8 +41,8 @@ if (Math.max(window.innerWidth, window.innerHeight) >= 1000) {
         return;
       }
       console.log(`[jfdmk] Video itemId is ${itemId}, fetching danmaku list`);
-      const resp = await fetch(`${BASE_PATH}/info?id=${itemId}`);
-      const { item: { query } = {}, code } = await resp.json();
+      const resp = await fetch(`${BASE_PATH}/query?id=${itemId}`);
+      const { code, query } = await resp.json();
       if (itemId === "") {
         return;
       }

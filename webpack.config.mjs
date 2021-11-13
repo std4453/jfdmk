@@ -14,8 +14,16 @@ const config = {
             {
                 test: /\.css$/i,
                 use: ['style-loader', 'css-loader'],
-            }
-        ]
+            },
+            {
+                test: /\.(js|jsx)$/i,
+                exclude: /node_modules/,
+                use: ['babel-loader'],
+            },
+        ],
+    },
+    resolve: {
+        extensions: ['', '.js', '.jsx'],
     },
     devServer: {
         allowedHosts: 'all',

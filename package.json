@@ -5,9 +5,9 @@
   "description": "",
   "main": "server/index.js",
   "scripts": {
-    "dev:server": "dotenv -- nodemon --signal SIGINT --watch server server/index.js",
+    "dev:server": "dotenv -- nodemon --signal SIGINT --watch server server/index.mjs",
     "dev:frontend": "NODE_ENV=development dotenv -- webpack serve",
-    "start": "dotenv -- node server/index.js",
+    "start": "dotenv -- node server/index.mjs",
     "build": "NODE_ENV=production webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -15,15 +15,23 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.24.0",
     "@std4453/comment-core-library": "^0.11.1",
+    "axios": "^0.24.0",
+    "clsx": "^1.1.1",
     "dotenv-cli": "^4.1.0",
+    "eventemitter3": "^4.0.7",
     "express": "^4.17.1",
-    "qs": "^6.10.1"
+    "qs": "^6.10.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "rxjs": "^7.4.0"
   },
-  "type": "module",
   "devDependencies": {
+    "@babel/core": "^7.16.0",
+    "@babel/preset-env": "^7.16.0",
+    "@babel/preset-react": "^7.16.0",
     "@types/webpack-dev-server": "^4.3.1",
+    "babel-loader": "^8.2.3",
     "css-loader": "^6.5.1",
     "nodemon": "^2.0.14",
     "style-loader": "^3.3.1",

@@ -2,42 +2,61 @@
 
 *jfdmk* 在 [*Jellyfin*](https://jellyfin.org/) 中添加了弹幕功能。
 
+
 它使用 [CommentCoreLibrary](https://github.com/jabbany/CommentCoreLibrary) 作为弹幕渲染引擎，用 [Bilibili 弹幕](https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/danmaku/danmaku_xml.md) 作为数据源。
+
+## 使用
+
+### 构建数据库
 
 为了使用它，你需要创建 `data/db.json` ，内容例如：
 
 ```json
 {
-  "items": [
+  "seasons": [
     {
-      "id": "368fb92303b596947aad104dca3186f0",
-      "query": "oid=424334074&pid=676072785"
+      "series": "Banished from the Hero's Party, I Decided to Live a Quiet Life in the Countryside",
+      "season": 1,
+      "bilibili_ss": "39461"
     }
   ]
 }
 ```
 
-这里的 `id` 是 Jellyfin 中的视频 ID，可以查看 console 输出：
+这里的 `series` 需要与 Jellyfin 中的剧集名称 **完全一致** ，如果你按照 [我的博客](https://blog.std4453.com:444/nas-from-zero-media-part/) 配置媒体栈，它应当与 [TheTVDB](https://thetvdb.com/) 中的名称相同。
 
-```
-[jfdmk] Video itemId is 368fb92303b596947aad104dca3186f0, fetching danmaku list
-```
+`season` 为 1 开始的季度编号，同样与 TheTVDB 中的数据相同。
 
-`query` 是 Bilibili 上对应视频的 `oid` 和 `pid` ，你可以打开对应的番剧页面然后在 console 中输入：
+这两个字段用于匹配 bilibili 的季度，可以根据 Jellyfin 中的实际情况调整。
+
+`bilibili_ss` 是 Bilibili 上对应视频的 `ss` ，你可以打开对应的番剧季度介绍页然后在 console 中输入：
 
 ```js
-console.log(`oid=${__INITIAL_STATE__.epInfo.cid}&pid=${__INITIAL_STATE__.epInfo.aid}`)
+console.log(__INITIAL_STATE__.mediaInfo.season_id)
 ```
 
-也许这一流程能变得更简单，等我研究研究。
+这里我们假定 Jellyfin 上的剧集顺序与 bilibili 上的一一对应，同一季度在记录数据后无需对每一集进行补充，之后可能会支持其他的匹配模式。
 
-然后你需要启动服务器：（需要 `node >= 16.0.0` ）
+这一数据库内容应当可以公开，之后会考虑提供公共的数据库。
+
+### 配置服务
+
+然后你需要配置服务，复制 `.env.example` 文件到 `.env` 并填写，例如：
+
+```
+PORT=10086
+BILIBILI_API_ENDPOINT=api.bilibili.com
+```
+
+配置完成之后，就可以启动服务器了：（需要 `node >= 16.0.0` ）
 
 ```bash
 $ yarn start
 ```
 
 或者使用 docker 镜像 `std4453/jfdmk:latest` 运行，默认端口 10086，注意 `data/db.json` 需要从外部挂载。
+
+### 修改 Jellyfin
 
 最后，你需要修改 Jellyfin 的 HTML 文件，在 `index.html` 的 `</body>` 前加入：
 
@@ -58,7 +77,7 @@ docker build \
 	.
 ```
 
-这里的 `JELLYFIN_IMAGE` 可以替换成其他的 Jellyfin 镜像，默认是 `linuxserver/jellyfin:latest`，以及由于 jfdmk 本体部署在其他域名下，你需要在 build 时指定它。之所以需要本地 build 而非提供公用镜像，是因为没有什么简单的动态配置手段，如果你对自己的 jfdmk 部署域名没有保密需求，你也可以配置 CI 自动 build 并 push 到 docker hub。
+这里的 `JELLYFIN_IMAGE` 可以替换成其他的 Jellyfin 镜像，默认是 `linuxserver/jellyfin:latest` ，以及由于 jfdmk 本体部署在其他域名下，你需要在 build 时指定它。之所以需要本地 build 而非提供公用镜像，是因为没有什么简单的动态配置手段，如果你对自己的 jfdmk 部署域名没有保密需求，你也可以配置 CI 自动 build 并 push 到 docker hub。
 
 镜像 build 完成之后，你可以将原先的 Jellyfin 镜像替换成 `<your_scope>/jellyfin_jfdmk:latest` 。
 

@@ -53,23 +53,13 @@ fs.watchFile("data/db.json", async () => {
 
 app.get("/query", async (req, res) => {
   try {
-    const { data: jfEpisodeData } = await axios(
-      `${process.env.JELLYFIN_HOST}/Users/${process.env.JELLYFIN_SERVICE_USER}/Items/${req.query.id}`,
-      {
-        headers: {
-          "X-Emby-Token": process.env.JELLYFIN_API_KEY,
-        },
-      }
-    );
-    if (jfEpisodeData.Type !== "Episode") {
-      res.send({ code: 404 });
-      return;
-    }
     const {
-      SeriesName: seriesName,
-      ParentIndexNumber: seasonIndex,
-      IndexNumber: episodeIndex,
-    } = jfEpisodeData;
+      series: seriesName,
+      season: seasonIndexStr,
+      episode: episodeIndexStr,
+    } = req.query;
+    const seasonIndex = parseInt(seasonIndexStr);
+    const episodeIndex = parseInt(episodeIndexStr);
     const season = data.seasons.find(
       ({ series, season }) => series === seriesName && season === seasonIndex
     );

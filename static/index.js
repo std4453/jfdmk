@@ -40,8 +40,21 @@ if (Math.max(window.innerWidth, window.innerHeight) >= 1000) {
       if (itemId === "") {
         return;
       }
-      console.log(`[jfdmk] Video itemId is ${itemId}, fetching danmaku list`);
-      const resp = await fetch(`${BASE_PATH}/query?id=${itemId}`);
+      console.log(`[jfdmk] Video itemId is ${itemId}, fetching item data`);
+      const data = await ApiClient.getItem(
+        ApiClient.getCurrentUserId(),
+        itemId
+      );
+      const { Type, SeriesName, ParentIndexNumber, IndexNumber } = data;
+      if (Type !== "Episode") {
+        console.log(`[jfdmk] ${itemId} has no matching danmaku`);
+        return;
+      }
+      const resp = await fetch(
+        `${BASE_PATH}/query?series=${encodeURIComponent(
+          SeriesName
+        )}&season=${ParentIndexNumber}&episode=${IndexNumber}`
+      );
       const { code, query } = await resp.json();
       if (itemId === "") {
         return;

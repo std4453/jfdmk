@@ -1,4 +1,4 @@
 ARG JELLYFIN_IMAGE=linuxserver/jellyfin:latest
 FROM $JELLYFIN_IMAGE
 ARG JFDMK_HOST
-RUN sed -i "s/<\/body>/<script src=\"\/\/$JFDMK_HOST\/static\/index.js\" defer><\/script><\/body>/g" /usr/share/jellyfin/web/index.html
+RUN sed -i "s/<\/body>/<script src=\"\/\/$JFDMK_HOST\/dist\/index.js\" defer><\/script><\/body>/g" /usr/share/jellyfin/web/index.html

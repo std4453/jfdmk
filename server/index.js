@@ -121,6 +121,8 @@ app.get("/query", async (req, res) => {
   }
 });
 
+app.use('/dist', express.static('dist'));
+
 app.listen(parseInt(process.env.PORT ?? "10086"), () => {
   console.log("Server started");
 });

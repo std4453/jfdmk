@@ -5,8 +5,10 @@
   "description": "",
   "main": "server/index.js",
   "scripts": {
-    "dev": "dotenv -- nodemon --signal SIGINT --watch server server/index.js",
+    "dev:server": "dotenv -- nodemon --signal SIGINT --watch server server/index.js",
+    "dev:frontend": "NODE_ENV=development webpack serve",
     "start": "dotenv -- node server/index.js",
+    "build": "NODE_ENV=production webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -14,15 +16,19 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.24.0",
+    "comment-core-library": "^0.11.1",
     "dotenv-cli": "^4.1.0",
     "express": "^4.17.1",
     "qs": "^6.10.1"
   },
   "type": "module",
   "devDependencies": {
-    "nodemon": "^2.0.14"
-  },
-  "engines": {
-    "node": ">=16"
+    "@types/webpack-dev-server": "^4.3.1",
+    "css-loader": "^6.5.1",
+    "nodemon": "^2.0.14",
+    "style-loader": "^3.3.1",
+    "webpack": "^5.64.0",
+    "webpack-cli": "^4.9.1",
+    "webpack-dev-server": "^4.4.0"
   }
 }

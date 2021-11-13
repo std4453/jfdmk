@@ -1,23 +1,12 @@
+import { CommentManager, CommentProvider, BilibiliFormat } from 'comment-core-library';
+import 'comment-core-library/dist/css/style.min.css';
+import './index.css';
+
+console.log(CommentManager, CommentProvider);
+
 if (Math.max(window.innerWidth, window.innerHeight) >= 1000) {
   const baseURL = new URL(document.currentScript.src);
   const BASE_PATH = `${baseURL.protocol}//${baseURL.host}`;
-
-  const script = document.createElement("script");
-  script.src = `${BASE_PATH}/static/CommentCoreLibrary.min.js`;
-  script.defer = true;
-  let scriptLoaded = false;
-  script.onload = () => {
-    scriptLoaded = true;
-  };
-  document.head.appendChild(script);
-  const loadCSS = (href) => {
-    const css = document.createElement("link");
-    css.rel = "stylesheet";
-    css.href = href;
-    document.head.appendChild(css);
-  };
-  loadCSS(`${BASE_PATH}/static/CommentCoreLibrary.css`);
-  loadCSS(`${BASE_PATH}/static/index.css`);
 
   let abp = null;
   let container = null;
@@ -108,7 +97,7 @@ if (Math.max(window.innerWidth, window.innerHeight) >= 1000) {
       }
       video = document.querySelector("video");
       await sleep(250);
-    } while (!scriptLoaded || !video);
+    } while (!video);
     console.log("[jfdmk] Video ready, initializing danmaku");
 
     abp = document.createElement("div");

@@ -13,6 +13,9 @@ jobs:
           name: Install Dependencies
           command: yarn --frozen-lockfile
       - run:
+          name: Build Frontend
+          command: yarn build
+      - run:
           name: Build Docker image
           command: |
             docker build . \

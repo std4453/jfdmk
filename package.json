@@ -6,7 +6,7 @@
   "main": "server/index.js",
   "scripts": {
     "dev:server": "dotenv -- nodemon --signal SIGINT --watch server server/index.js",
-    "dev:frontend": "NODE_ENV=development webpack serve",
+    "dev:frontend": "NODE_ENV=development dotenv -- webpack serve",
     "start": "dotenv -- node server/index.js",
     "build": "NODE_ENV=production webpack",
     "test": "echo \"Error: no test specified\" && exit 1"

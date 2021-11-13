@@ -26,8 +26,11 @@ const config = {
         },
         headers: {
             'Access-Control-Allow-Origin': '*',
-        }
-    }
+        },
+        client: {
+            webSocketURL: process.env.DEV_WEBSOCKET_URL,
+        },
+    },
 };
 
 export default config;

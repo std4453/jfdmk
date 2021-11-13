@@ -2,8 +2,6 @@ import { CommentManager, CommentProvider, BilibiliFormat } from '@std4453/commen
 import '@std4453/comment-core-library/dist/css/style.min.css';
 import './index.css';
 
-console.log(CommentManager, CommentProvider);
-
 if (Math.max(window.innerWidth, window.innerHeight) >= 1000) {
   const baseURL = new URL(document.currentScript.src);
   const BASE_PATH = `${baseURL.protocol}//${baseURL.host}`;

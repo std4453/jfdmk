@@ -154,6 +154,13 @@ $ yarn dev:frontend
 
 配置里允许从任何地址访问后端，请注意权限问题。
 
+为了从 Jellyfin 中访问 `webpack-dev-server` 的 WebSocket，你需要在 `.env` 中配置：
+
+```
+DEV_WEBSOCKET_URL=ws://your_jfdmk_dev_host/ws
+```
+
+如果不进行配置，可能无法获得 HMR 支持。
 ## 作者
 
 张海川 - Haichuan Zhang - [me@std4453.com](mailto:me@std4453.com) - [Homepage](https://blog.std4453.com:444)

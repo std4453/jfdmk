@@ -12,6 +12,7 @@ const inflate = promisify(zlib.inflateRaw);
 const apiEndpoint = process.env.BILIBILI_API_ENDPOINT ?? "api.bilibili.com";
 
 app.get("/danmaku", async (req, res) => {
+  res.header("access-control-allow-origin", "*");
   try {
     const { data } = await axios({
       // override local dns
@@ -25,7 +26,6 @@ app.get("/danmaku", async (req, res) => {
     });
     const xmlStr = await inflate(data);
     res.type("text/xml");
-    res.header("access-control-allow-origin", "*");
     res.send(xmlStr);
   } catch (e) {
     res.status(500);
@@ -52,6 +52,7 @@ fs.watchFile("data/db.json", async () => {
 });
 
 app.get("/query", async (req, res) => {
+  res.header("access-control-allow-origin", "*");
   try {
     const {
       series: seriesName,
@@ -109,7 +110,6 @@ app.get("/query", async (req, res) => {
       return;
     }
     const { aid, cid } = episode;
-    res.header("access-control-allow-origin", "*");
     res.send({
       code: 200,
       query: `oid=${cid}&pid=${aid}`,

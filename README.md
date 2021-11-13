@@ -69,9 +69,23 @@ console.log(__INITIAL_STATE__.mediaInfo.season_id);
 
 _TODO: 这一数据库内容应当可以公开，之后会考虑提供公共的数据库。_
 
-### 配置服务
+### 启动服务
 
-配置完成之后，就可以启动服务器了：
+你可以使用 docker 镜像 `std4453/jfdmk:latest` 运行，这样的话可以跳过下面的步骤。
+
+首先你需要安装依赖：
+
+```bash
+$ yarn install --production=true
+```
+
+然后需要编译前端：
+
+```bash
+$ yarn build
+```
+
+现在可以启动服务器了：
 
 ```bash
 $ yarn start
@@ -81,14 +95,14 @@ $ yarn start
 
 此外，服务提供了 `BILIBILI_API_ENDPOINT` 环境变量，可以使用一个固定的 IP 地址访问 bilibili API，以应对本地 DNS 拿到国外 CDN 地址的情况。不指定的话则会解析 `api.bilibili.com` 域名。
 
-你可以使用 docker 镜像 `std4453/jfdmk:latest` 运行，注意 `data/db.json` 需要从外部挂载。
+请注意，使用 docker 运行时， `data/db.json` 需要从外部挂载。
 
 ### 修改 Jellyfin
 
 最后，你需要修改 Jellyfin 的 HTML 文件，在 `index.html` 的 `</body>` 前加入：
 
 ```html
-<script src="//your_jfdmk_host/static/index.js" defer></script>
+<script src="//your_jfdmk_host/dist/index.js" defer></script>
 ```
 
 刷新之后，打开对应的视频，就应该能看到弹幕了。
@@ -111,6 +125,34 @@ docker build \
 注意这样 build 得到的镜像无法自动更新 Jellyfin 版本，你可以写一个脚本定期自动运行上述 build 流程。
 
 jfdmk 只在 Web 端启用，手机端的渲染效果比较差，之后可能会启用。
+
+## 开发
+
+开发后端时使用：
+
+```bash
+$ yarn dev:server
+```
+
+它使用 `nodemon` 监听 `server/index.js` 的变化，在变化时自动重启服务器。
+
+它也默认在 10086 端口上运行，注意不要和运行中的服务冲突。
+
+开发前端时首先需要启动后端，然后：
+
+```bash
+$ yarn dev:frontend
+```
+
+它会在 3000 端口启动 `webpack-dev-server` ，自动打包前端代码，并反代后端请求。
+
+开发时你需要在 Jellyfin 中插入：
+
+```html
+<script src="//your_jfdmk_dev_host/index.js" defer></script>
+```
+
+配置里允许从任何地址访问后端，请注意权限问题。
 
 ## 作者
 

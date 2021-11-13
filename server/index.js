@@ -67,7 +67,27 @@ app.get("/query", async (req, res) => {
       res.send({ code: 404 });
       return;
     }
-    const { bilibili_ss } = season;
+    const { bilibili_ss, bilibili_from = 1, ranges } = season;
+    let ss = bilibili_ss;
+    let offset = bilibili_from - 1;
+    if (!ss && ranges) {
+      for (const {
+        from = 0,
+        to = episodeIndex,
+        bilibili_ss,
+        bilibili_from = 1,
+      } of ranges) {
+        if (episodeIndex >= from && episodeIndex <= to) {
+          ss = bilibili_ss;
+          offset = bilibili_from - from;
+          break;
+        }
+      }
+    }
+    if (!ss) {
+      res.send({ code: 404 });
+      return;
+    }
     const { data: bilibiliSeasonData } = await axios({
       url: `https://${apiEndpoint}/pgc/web/season/section?season_id=${bilibili_ss}`,
       headers: {
@@ -83,7 +103,7 @@ app.get("/query", async (req, res) => {
         main_section: { episodes },
       },
     } = bilibiliSeasonData;
-    const episode = episodes[episodeIndex - 1];
+    const episode = episodes[episodeIndex - 1 + offset];
     if (!episode) {
       res.send({ code: 404 });
       return;

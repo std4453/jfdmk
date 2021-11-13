@@ -1,5 +1,5 @@
-import { CommentManager, CommentProvider, BilibiliFormat } from 'comment-core-library';
-import 'comment-core-library/dist/css/style.min.css';
+import { CommentManager, CommentProvider, BilibiliFormat } from '@std4453/comment-core-library';
+import '@std4453/comment-core-library/dist/css/style.min.css';
 import './index.css';
 
 console.log(CommentManager, CommentProvider);

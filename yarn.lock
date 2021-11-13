@@ -33,6 +33,11 @@
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.14.0.tgz#9fb3a3cf3132328151f353de4632e01e52102bea"
   integrity sha512-9NET910DNaIPngYnLLPeg+Ogzqsi9uM4mSboU5y6p8S5DzMTVEsJZrawi+BoDNUVBa2DhJqQYUFvMDfgU062LQ==
 
+"@std4453/comment-core-library@^0.11.1":
+  version "0.11.1"
+  resolved "https://registry.yarnpkg.com/@std4453/comment-core-library/-/comment-core-library-0.11.1.tgz#6d78ca788a9ed3ace604bf8034b1f6a476939dc1"
+  integrity sha512-XHM75LxIUO9v2VKJ++wuPCrqqsAbZ7kt85C9lu5DgqIhx+TKGU1fpyo0Vf8a0Gj0w1svwm3pdI3bjjiu3jit8w==
+
 "@szmarczak/http-timer@^1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@szmarczak/http-timer/-/http-timer-1.1.2.tgz#b1665e2c461a2cd92f4c1bbf50d5454de0d4b421"
@@ -665,11 +670,6 @@ commander@^7.0.0:
   version "7.2.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-7.2.0.tgz#a36cb57d0b501ce108e4d20559a150a391d97ab7"
   integrity sha512-QrWXB+ZQSVPmIWIhtEO9H+gwHaMGYiF5ChvoJ+K9ZGHG/sVsa6yiesAD1GC/x46sET00Xlwo1u49RVVVzvcSkw==
-
-comment-core-library@^0.11.1:
-  version "0.11.1"
-  resolved "https://registry.yarnpkg.com/comment-core-library/-/comment-core-library-0.11.1.tgz#095a722c649d67d3e7be9a8823366136775d0987"
-  integrity sha512-EgUR2zZjAHJO6rue+7sTOy+kYdF2M9hALi+U0Dm4mzmyTYz/E82CPEsi17DMjnuOox0CbBoPUS/QzsXHFPnUWw==
 
 compressible@~2.0.16:
   version "2.0.18"

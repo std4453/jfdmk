@@ -9,13 +9,13 @@ const app = express();
 
 const inflate = promisify(zlib.inflateRaw);
 
+const apiEndpoint = process.env.BILIBILI_API_ENDPOINT ?? "api.bilibili.com";
+
 app.get("/danmaku", async (req, res) => {
   try {
     const { data } = await axios({
       // override local dns
-      url: `https://${
-        process.env.BILIBILI_API_ENDPOINT
-      }/x/v1/dm/list.so?${qs.stringify(req.query)}`,
+      url: `https://${apiEndpoint}/x/v1/dm/list.so?${qs.stringify(req.query)}`,
       responseType: "arraybuffer",
       decompress: false,
       headers: {
@@ -69,7 +69,7 @@ app.get("/query", async (req, res) => {
     }
     const { bilibili_ss } = season;
     const { data: bilibiliSeasonData } = await axios({
-      url: `https://${process.env.BILIBILI_API_ENDPOINT}/pgc/web/season/section?season_id=${bilibili_ss}`,
+      url: `https://${apiEndpoint}/pgc/web/season/section?season_id=${bilibili_ss}`,
       headers: {
         host: "api.bilibili.com",
       },
@@ -101,6 +101,6 @@ app.get("/query", async (req, res) => {
   }
 });
 
-app.listen(parseInt(process.env.PORT ?? '10086'), () => {
+app.listen(parseInt(process.env.PORT ?? "10086"), () => {
   console.log("Server started");
 });

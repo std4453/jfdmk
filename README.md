@@ -41,13 +41,6 @@ console.log(__INITIAL_STATE__.mediaInfo.season_id)
 
 ### 配置服务
 
-然后你需要配置服务，复制 `.env.example` 文件到 `.env` 并填写，例如：
-
-```
-PORT=10086
-BILIBILI_API_ENDPOINT=api.bilibili.com
-```
-
 配置完成之后，就可以启动服务器了：（需要 `node >= 16.0.0` ）
 
 ```bash

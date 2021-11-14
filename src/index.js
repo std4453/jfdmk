@@ -1,15 +1,15 @@
-import { BehaviorSubject } from 'rxjs';
-import commentsEffect from './comments';
+import { BehaviorSubject } from "rxjs";
+import commentsEffect from "./effect";
 
 let unmount = null;
 const baseURL = new URL(document.currentScript.src);
 const basePath = `${baseURL.protocol}//${baseURL.host}`;
-const itemIdSubject = new BehaviorSubject('');
+const itemIdSubject = new BehaviorSubject("");
 
 if (Math.max(window.innerWidth, window.innerHeight) >= 1000) {
   const tryMount = () => {
     if (location.hash !== "#!/video") return false;
-    const video = document.querySelector('video');
+    const video = document.querySelector("video");
     if (!video) return false;
     const page = Array.from(
       document.querySelectorAll("div[id=videoOsdPage]")
@@ -21,7 +21,7 @@ if (Math.max(window.innerWidth, window.innerHeight) >= 1000) {
     if (!osdTimeText) return false;
     if (!itemIdSubject.getValue()) return false;
     if (!unmount) {
-      console.log('[jfdmk] initializing comments...');
+      console.log("[jfdmk] initializing comments...");
       unmount = commentsEffect({
         video,
         buttons,
@@ -35,10 +35,10 @@ if (Math.max(window.innerWidth, window.innerHeight) >= 1000) {
   const update = () => {
     if (!tryMount()) {
       if (unmount) {
-        console.log('[jfdmk] finalizing comments...');
+        console.log("[jfdmk] finalizing comments...");
         unmount();
         unmount = null;
-        itemIdSubject.next('');
+        itemIdSubject.next("");
       }
     }
   };
@@ -59,5 +59,5 @@ if (Math.max(window.innerWidth, window.innerHeight) >= 1000) {
     return originalFetch(...args);
   };
 
-  console.log('[jfdmk] waiting...');
+  console.log("[jfdmk] waiting...");
 }

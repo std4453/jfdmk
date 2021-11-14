@@ -1,29 +1,17 @@
-import clsx from "clsx";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import ReactDOM from 'react-dom';
+import React, { useEffect, useMemo, useState } from "react";
+import ReactDOM from "react-dom";
 
-import { CommentManager, CommentProvider, BilibiliFormat } from '@std4453/comment-core-library';
-import '@std4453/comment-core-library/dist/css/style.min.css';
-import './index.css';
+import {
+  CommentManager,
+  CommentProvider,
+  BilibiliFormat,
+} from "@std4453/comment-core-library";
+import "@std4453/comment-core-library/dist/css/style.min.css";
+import DanmakuButton from "./DanmakuButton";
 
-const DanmakuIcon = ({ visible, setVisible }) => {
-  const handleClick = useCallback(() => {
-    setVisible((visible) => !visible);
-  }, [setVisible]);
+import "./index.css";
 
-  return (
-    <button className="paper-icon-button-light" onClick={handleClick}>
-      <span className={clsx(
-        'material-icons', 
-        visible ? 'subtitles' : 'subtitles_off'
-      )} />
-    </button>
-  );
-}
-
-const Comments = ({ 
-  video, buttonContainer, itemIdSubject, basePath,
-}) => {
+const Comments = ({ video, buttonContainer, itemIdSubject, basePath }) => {
   const [container, setContainer] = useState(null);
   const cm = useMemo(() => {
     if (!container) return;
@@ -31,7 +19,6 @@ const Comments = ({
   }, [container]);
   useEffect(() => {
     if (!cm) return;
-    cm.options.scroll.scale = 1.75;
     cm.init();
   }, [cm]);
   useEffect(() => {
@@ -88,7 +75,7 @@ const Comments = ({
         );
         const { Type, SeriesName, ParentIndexNumber, IndexNumber } = data;
         if (Type !== "Episode") {
-          throw new Error('not_found');
+          throw new Error("not_found");
         }
         const resp = await fetch(
           `${basePath}/query?series=${encodeURIComponent(
@@ -97,7 +84,7 @@ const Comments = ({
         );
         const { code, query } = await resp.json();
         if (code !== 200) {
-          throw new Error('not_found');
+          throw new Error("not_found");
         }
         const provider = new CommentProvider();
         provider.addParser(
@@ -117,7 +104,7 @@ const Comments = ({
           cm.clear();
         }
       } catch (e) {
-        if (e.message === 'not_found') {
+        if (e.message === "not_found") {
           console.log(`[jfdmk] ${itemId} has no matching danmaku`);
         } else {
           console.error(`[jfdmk] loading danmaku failed for ${itemId}`);
@@ -127,48 +114,48 @@ const Comments = ({
     })();
   }, [itemId, cm, video, basePath]);
 
-  return <>
-    <div className="abp">
-      <div style={{
-          position: 'fixed',
-          left: 0,
-          top: 0,
-          width: '100vw',
-          height: '100vh',
-          pointerEvents: 'none',
-          zIndex: 1,
-          visibility: visible ? 'visible' : 'hidden',
-      }} className="container" ref={setContainer}>
+  const [opacity, setOpacity] = useState(1.0);
+  const [speed, setSpeed] = useState(0.75);
+  useEffect(() => {
+    if (!cm) return;
+    cm.options.scroll.scale = 1 / speed;
+  }, [cm, speed]);
+  const [fontSize, setFontSize] = useState(1.0);
+
+  return (
+    <>
+      <div className="abp">
+        <div
+          style={{
+            position: "fixed",
+            left: 0,
+            top: 0,
+            width: "100vw",
+            height: "100vh",
+            pointerEvents: "none",
+            zIndex: 1,
+            visibility: visible ? "visible" : "hidden",
+            opacity,
+          }}
+          className="container"
+          ref={setContainer}
+        ></div>
       </div>
-    </div>
-    {ReactDOM.createPortal(
-      <DanmakuIcon visible={visible} setVisible={setVisible} />,
-      buttonContainer
-    )}
-  </>
-}
-
-const effect = ({
-  video, buttons, osdTimeText, itemIdSubject, basePath
-}) => {
-  const root = document.createElement('root');
-  document.body.appendChild(root);
-  const buttonContainer = document.createElement("div");
-  buttons.insertBefore(buttonContainer, osdTimeText.nextSibling);
-  ReactDOM.render(
-    <Comments 
-      video={video} 
-      buttonContainer={buttonContainer} 
-      itemIdSubject={itemIdSubject}
-      basePath={basePath}
-    />,
-    root
+      {ReactDOM.createPortal(
+        <DanmakuButton 
+          visible={visible} 
+          setVisible={setVisible} 
+          opacity={opacity}
+          setOpacity={setOpacity}
+          speed={speed}
+          setSpeed={setSpeed}
+          fontSize={fontSize}
+          setFontSize={setFontSize}
+        />,
+        buttonContainer
+      )}
+    </>
   );
-
-  return () => {
-    ReactDOM.unmountComponentAtNode(root);
-    buttonContainer.remove();
-    root.remove();
-  };
 };
-export default effect;
+
+export default Comments;

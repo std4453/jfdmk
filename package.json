@@ -27,7 +27,8 @@
     "qs": "^6.10.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "rxjs": "^7.4.0"
+    "rxjs": "^7.4.0",
+    "shimmer": "^1.2.1"
   },
   "devDependencies": {
     "@babel/core": "^7.16.0",

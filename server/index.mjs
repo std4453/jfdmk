@@ -9,14 +9,14 @@ const app = express();
 
 const inflate = promisify(zlib.inflateRaw);
 
-const apiEndpoint = process.env.BILIBILI_API_ENDPOINT ?? "api.bilibili.com";
-
 app.get("/danmaku", async (req, res) => {
   res.header("access-control-allow-origin", "*");
   try {
     const { data } = await axios({
       // override local dns
-      url: `https://${apiEndpoint}/x/v1/dm/list.so?${qs.stringify(req.query)}`,
+      url: `https://api.bilibili.com/x/v1/dm/list.so?${qs.stringify(
+        req.query
+      )}`,
       responseType: "arraybuffer",
       decompress: false,
       headers: {
@@ -121,7 +121,7 @@ app.get("/query", async (req, res) => {
   }
 });
 
-app.use('/dist', express.static('dist'));
+app.use("/dist", express.static("dist"));
 
 app.listen(parseInt(process.env.PORT ?? "10086"), () => {
   console.log("Server started");

@@ -93,8 +93,6 @@ $ yarn start
 
 默认端口为 10086，你也可以通过 `PORT` 环境变量更改端口。
 
-此外，服务提供了 `BILIBILI_API_ENDPOINT` 环境变量，可以使用一个固定的 IP 地址访问 bilibili API，以应对本地 DNS 拿到国外 CDN 地址的情况。不指定的话则会解析 `api.bilibili.com` 域名。
-
 请注意，使用 docker 运行时， `data/db.json` 需要从外部挂载。
 
 ### 修改 Jellyfin

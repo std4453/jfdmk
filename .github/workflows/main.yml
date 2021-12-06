@@ -50,7 +50,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install dependencies
-        run: yarn install --production
+        run: yarn install --frozen-lockfile
 
       - name: Build app
         run: yarn build

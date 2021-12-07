@@ -23,7 +23,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: ghcr.io/std4453/lark-alertmanager-webhook
+          images: ghcr.io/std4453/jfdmk
           tags: |
             type=ref,event=branch
             type=ref,event=pr

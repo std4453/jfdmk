@@ -20,7 +20,6 @@ app.get("/danmaku", async (req, res) => {
       responseType: "arraybuffer",
       decompress: false,
       headers: {
-        host: "api.bilibili.com",
         "accept-encoding": "gzip, deflate, br",
       },
     });
@@ -89,12 +88,9 @@ app.get("/query", async (req, res) => {
       res.send({ code: 404 });
       return;
     }
-    const { data: bilibiliSeasonData } = await axios({
-      url: `https://${apiEndpoint}/pgc/web/season/section?season_id=${bilibili_ss}`,
-      headers: {
-        host: "api.bilibili.com",
-      },
-    });
+    const { data: bilibiliSeasonData } = await axios.get(
+      `https://api.bilibili.com/pgc/web/season/section?season_id=${bilibili_ss}`
+    );
     if (bilibiliSeasonData.code !== 0) {
       res.send({ code: 404 });
       return;
